@@ -1,12 +1,7 @@
 #include "Game.hpp"
 
-Game::Game()
-{
-}
-
-Game::~Game()
-{
-}
+Game::Game(){}
+Game::~Game(){}
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)
 {
@@ -35,12 +30,11 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
     }
 
-    SDL_Surface* tmpPlayerSurface = IMG_Load(DEFAULT_IMAGE_PLAYER_PATH);
-    SDL_Surface* tmpBackgroundSurface = IMG_Load(DEFAULT_IMAGE_BACKGROUND_PATH);
-    backgroundTex = SDL_CreateTextureFromSurface(renderer, tmpBackgroundSurface);
-    playerTex = SDL_CreateTextureFromSurface(renderer, tmpPlayerSurface);
+    // backgroundTex = TextureManager::LoadTexture(DEFAULT_IMAGE_BACKGROUND_PATH, renderer);
+    // playerTex = TextureManager::LoadTexture(DEFAULT_IMAGE_PLAYER_PATH, renderer);
 
-    createWidgetFPS();
+    backgroundTexture = TextureManager::LoadTexture(DEFAULT_IMAGE_BACKGROUND_PATH, renderer);
+    playerTexture = TextureManager::LoadTexture(DEFAULT_IMAGE_PLAYER_PATH, renderer);
 }
 
 void Game::handleEvents()
@@ -57,11 +51,11 @@ void Game::handleEvents()
             break;
         case SDL_KEYDOWN:
             keysym = event.key.keysym;
-            SDL_Log("Touche enfoncée : %c (code : %d)", keysym.sym, keysym.scancode);
+            SDL_Log("KEYDOWN : %c (code : %d)", keysym.sym, keysym.scancode);
             break;
         case SDL_KEYUP:
             keysym = event.key.keysym;
-            SDL_Log("Touche relâchée : %c (code : %d)", keysym.sym, keysym.scancode);
+            SDL_Log("KEYUP : %c (code : %d)", keysym.sym, keysym.scancode);
             break;
         default:
             break;
@@ -70,28 +64,32 @@ void Game::handleEvents()
 void Game::update()
 {
     count++;
-    destPlayerRect.h = 100;
-    destPlayerRect.w = 100;
-    destPlayerRect.x  = count;
-    if(destPlayerRect.x >= DEFAULT_SCREEN_WIDTH)
+    playerTexture->rect.h = 100;
+    playerTexture->rect.w = 100;
+    playerTexture->rect.x  = count;
+    playerTexture->rect.y = DEFAULT_SCREEN_HEIGHT - 100;
+    if(playerTexture->rect.x >= DEFAULT_SCREEN_WIDTH)
     {
         count = 0;
     }
+    std::cout << count << std::endl;
 }
 void Game::render()
 {
     SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, backgroundTex, NULL, NULL);
-    SDL_RenderCopy(renderer, playerTex, NULL, &destPlayerRect);
-    SDL_RenderCopy(renderer, fpsTex, NULL, &fpsRect);
+    SDL_RenderCopy(renderer, backgroundTexture->texture, NULL, NULL);
+    SDL_RenderCopy(renderer, playerTexture->texture, NULL, &playerTexture->rect);
+    SDL_RenderCopy(renderer, fpsText->texture, NULL, &fpsText->rect);
+    // SDL_RenderCopy(renderer, fpsTexture, NULL, &fpsRect);
     SDL_RenderPresent(renderer);
     SDL_Delay(10);
 }
 void Game::clean()
 {
-    SDL_DestroyTexture(backgroundTex);
-    SDL_DestroyTexture(playerTex);
-    SDL_DestroyTexture(fpsTex);
+    SDL_DestroyTexture(backgroundTexture->texture);
+    SDL_DestroyTexture(playerTexture->texture);
+    SDL_DestroyTexture(fpsText->texture);
+    // SDL_DestroyTexture(fpsTexture);
 
     SDL_DestroyRenderer(renderer);
 
@@ -116,30 +114,26 @@ int Game::getFrameDelay()
     return 1000 / DEFAULT_FPS;
 }
 
-void Game::createWidgetFPS()
+void Game::renderTextFps(int fps)
 {
-    if(TTF_Init() == 0) {
-        TTF_Font *font = TTF_OpenFont(DEFAULT_FONT_FAMILLY_TTF_PATH, DEFAULT_FONT_SIZE);
-        if (!font)
-        {
-            SDL_Log("Couldn't find/init open ttf font.");
-        } else {
-            std::string framerDelayString = std::to_string(frameTime).append(" FPS");
-            char const *framerDelayPtr = framerDelayString.c_str();
-
-            fpsSurface = TTF_RenderText_Solid(font, framerDelayPtr, textColor);
-            fpsTex = SDL_CreateTextureFromSurface(renderer, fpsSurface);
-            fpsRect.x = DEFAULT_SCREEN_WIDTH - 250; // Center horizontaly
-            fpsRect.y = 150; // Center verticaly
-            fpsRect.w = fpsSurface->w;
-            fpsRect.h = fpsSurface->h;
-            // After you create the texture you can release the surface memory allocation because we actually render the texture not the surface.
-            TTF_Quit();
-        }
-    }
-}
-
-void Game::renderWidgetFPS()
-{
-    createWidgetFPS();
+    fpsText = TextureManager::LoadTextureText(
+        DEFAULT_SCREEN_WIDTH,
+        DEFAULT_FONT_FAMILLY_TTF_PATH, 
+        DEFAULT_FONT_SIZE, 
+        Utils::intToString(fps, " FPS"),
+        textColor,
+        renderer
+    );
+    // if(TTF_Init() == 0) {
+    //     TTF_Font *font = TTF_OpenFont(DEFAULT_FONT_FAMILLY_TTF_PATH, DEFAULT_FONT_SIZE);
+    //     SDL_Surface *surface = TTF_RenderText_Solid(font, Utils::intToString(fps, " FPS"), textColor);
+    //     fpsTexture = SDL_CreateTextureFromSurface(renderer, surface);
+    //     fpsRect.x = DEFAULT_SCREEN_WIDTH - 250;
+    //     fpsRect.y = 150;
+    //     fpsRect.w = surface->w;
+    //     fpsRect.h = surface->h;
+        
+    //     SDL_FreeSurface(surface);
+    //     TTF_Quit();
+    // }
 }

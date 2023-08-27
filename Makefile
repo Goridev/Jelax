@@ -37,4 +37,4 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 # Règle pour nettoyer les fichiers temporaires
 clean:
-	rm -rf $(OBJDIR) $(BINDIR)
+	rm -rf $(OBJDIR)

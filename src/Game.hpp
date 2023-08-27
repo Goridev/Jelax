@@ -4,9 +4,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+
+#include "TextureManager.hpp"
+#include "Utils.hpp"
 
 #define DEFAULT_TITLE "JustRelax"
 #define DEFAULT_SCREEN_WIDTH 1600
@@ -37,8 +41,7 @@ public:
     int getFps();
     int getFrameDelay();
 
-    void createWidgetFPS();
-    void renderWidgetFPS();
+    void renderTextFps(int fps);
 
     Uint32 frameStart;
     int frameTime;
@@ -47,20 +50,20 @@ private:
     int count;
     bool isRunning;
 
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-
-    SDL_Texture *backgroundTex;
-
-    SDL_Texture *playerTex;
-    SDL_Rect srcPlayerRect, destPlayerRect;
+    SDL_Window* window;
+    SDL_Renderer* renderer;
 
     SDL_Color textColor = { 255, 255, 255, 255 };
-    SDL_Texture *fpsTex;
-    SDL_Surface *fpsSurface;
-    SDL_Rect fpsRect;
 
-    TTF_Font *font;
+    // SDL_Texture* backgroundTex;
+    // SDL_Texture* playerTex;
+    // SDL_Rect srcPlayerRect, destPlayerRect;
+    // SDL_Texture *fpsTexture;
+    // SDL_Rect fpsRect;
+
+    Texture* backgroundTexture = new Texture();
+    Texture* playerTexture = new Texture();
+    Texture* fpsText = new Texture();
 };
 
 #endif

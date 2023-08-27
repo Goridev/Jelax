@@ -22,14 +22,14 @@ int main(int argc, char const *argv[])
         game->handleEvents();
         game->update();
         game->render();
-        game->renderWidgetFPS();
-
         game->frameTime = SDL_GetTicks() - game->frameStart;
 
         if(game->getFrameDelay() > game->frameTime)
         {
             SDL_Delay(game->getFrameDelay() - game->frameTime);
         }
+
+        game->renderTextFps(game->frameTime);
     }
 
     game->clean();
