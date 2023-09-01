@@ -17,19 +17,22 @@ int main(int argc, char const *argv[])
     );
 
     while(game->running()) {
+        // Start FPS
         game->frameStart = SDL_GetTicks();
+
+        game->updateTextFPS(game->frameTime);
 
         game->handleEvents();
         game->update();
         game->render();
+        // Stop Fps
         game->frameTime = SDL_GetTicks() - game->frameStart;
 
+        // Limit Frame Rate
         if(game->getFrameDelay() > game->frameTime)
         {
             SDL_Delay(game->getFrameDelay() - game->frameTime);
         }
-
-        game->renderTextFps(game->frameTime);
     }
 
     game->clean();

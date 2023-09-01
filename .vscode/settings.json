@@ -1,5 +1,7 @@
 {
     "files.associations": {
         "ostream": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/home/g3/workspace/game/JustRelax",
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }

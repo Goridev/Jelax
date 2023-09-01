@@ -17,7 +17,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 
         window = SDL_CreateWindow(title, xpos, ypos, width, height, SDL_WINDOW_BORDERLESS);
-        renderer = SDL_CreateRenderer(window, -1, 0);
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
         if(window && renderer)
         {
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -30,11 +30,20 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
     }
 
-    // backgroundTex = TextureManager::LoadTexture(DEFAULT_IMAGE_BACKGROUND_PATH, renderer);
-    // playerTex = TextureManager::LoadTexture(DEFAULT_IMAGE_PLAYER_PATH, renderer);
-
+    player = new GameObject(
+        DEFAULT_IMAGE_PLAYER_PATH,
+        new Size(64, 64),
+        renderer
+    ); 
     backgroundTexture = TextureManager::LoadTexture(DEFAULT_IMAGE_BACKGROUND_PATH, renderer);
-    playerTexture = TextureManager::LoadTexture(DEFAULT_IMAGE_PLAYER_PATH, renderer);
+    fpsText = TextureManager::LoadTextureText(
+        DEFAULT_SCREEN_WIDTH,
+        DEFAULT_FONT_FAMILLY_TTF_PATH, 
+        DEFAULT_FONT_SIZE, 
+        Utils::intToString(fps, TEXT_FPS),
+        textColor,
+        renderer
+    );
 }
 
 void Game::handleEvents()
@@ -64,35 +73,47 @@ void Game::handleEvents()
 void Game::update()
 {
     count++;
-    playerTexture->rect.h = 100;
-    playerTexture->rect.w = 100;
-    playerTexture->rect.x  = count;
-    playerTexture->rect.y = DEFAULT_SCREEN_HEIGHT - 100;
-    if(playerTexture->rect.x >= DEFAULT_SCREEN_WIDTH)
+    int playerPosX = count * 2;
+    int playerPosY = DEFAULT_SCREEN_HEIGHT - 100;
+    Position* playerPos = new Position(playerPosX,playerPosY);
+    player->update(playerPos);
+    // playerTexture->destRect->h = 100;
+    // playerTexture->destRect->w = 100;
+    // playerTexture->destRect->x  = count * 2;
+    // playerTexture->destRect->y = DEFAULT_SCREEN_HEIGHT - 100;
+
+    if(player->position->x >= DEFAULT_SCREEN_WIDTH)
     {
         count = 0;
     }
-    std::cout << count << std::endl;
+    
+    fpsText = TextureManager::LoadTextureText(
+        DEFAULT_SCREEN_WIDTH,
+        DEFAULT_FONT_FAMILLY_TTF_PATH, 
+        DEFAULT_FONT_SIZE, 
+        Utils::intToString(frameTime, TEXT_FPS),
+        textColor,
+        renderer
+    );
 }
 void Game::render()
 {
     SDL_RenderClear(renderer);
+    
     SDL_RenderCopy(renderer, backgroundTexture->texture, NULL, NULL);
-    SDL_RenderCopy(renderer, playerTexture->texture, NULL, &playerTexture->rect);
-    SDL_RenderCopy(renderer, fpsText->texture, NULL, &fpsText->rect);
-    // SDL_RenderCopy(renderer, fpsTexture, NULL, &fpsRect);
+    player->render();
+    SDL_RenderCopy(renderer, fpsText->texture, NULL, fpsText->destRect);
+
     SDL_RenderPresent(renderer);
     SDL_Delay(10);
 }
 void Game::clean()
 {
     SDL_DestroyTexture(backgroundTexture->texture);
-    SDL_DestroyTexture(playerTexture->texture);
+    player->clean();
     SDL_DestroyTexture(fpsText->texture);
-    // SDL_DestroyTexture(fpsTexture);
 
     SDL_DestroyRenderer(renderer);
-
     SDL_DestroyWindow(window);
 
     SDL_Quit();
@@ -114,26 +135,7 @@ int Game::getFrameDelay()
     return 1000 / DEFAULT_FPS;
 }
 
-void Game::renderTextFps(int fps)
+void Game::updateTextFPS(int fps)
 {
-    fpsText = TextureManager::LoadTextureText(
-        DEFAULT_SCREEN_WIDTH,
-        DEFAULT_FONT_FAMILLY_TTF_PATH, 
-        DEFAULT_FONT_SIZE, 
-        Utils::intToString(fps, " FPS"),
-        textColor,
-        renderer
-    );
-    // if(TTF_Init() == 0) {
-    //     TTF_Font *font = TTF_OpenFont(DEFAULT_FONT_FAMILLY_TTF_PATH, DEFAULT_FONT_SIZE);
-    //     SDL_Surface *surface = TTF_RenderText_Solid(font, Utils::intToString(fps, " FPS"), textColor);
-    //     fpsTexture = SDL_CreateTextureFromSurface(renderer, surface);
-    //     fpsRect.x = DEFAULT_SCREEN_WIDTH - 250;
-    //     fpsRect.y = 150;
-    //     fpsRect.w = surface->w;
-    //     fpsRect.h = surface->h;
-        
-    //     SDL_FreeSurface(surface);
-    //     TTF_Quit();
-    // }
+    
 }

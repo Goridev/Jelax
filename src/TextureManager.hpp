@@ -1,18 +1,11 @@
 #ifndef TextureManage_hpp
 #define TextureManage_hpp
 
+#include "Texture.hpp"
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-
-class Texture
-{
-    public:
-        Texture(){};
-        ~Texture(){};
-        SDL_Texture* texture = nullptr;
-        SDL_Rect rect;
-};
 
 class TextureManager
 {

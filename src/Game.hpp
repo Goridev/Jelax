@@ -11,6 +11,7 @@
 
 #include "TextureManager.hpp"
 #include "Utils.hpp"
+#include "GameObject.hpp"
 
 #define DEFAULT_TITLE "JustRelax"
 #define DEFAULT_SCREEN_WIDTH 1600
@@ -23,6 +24,8 @@
 #define DEFAULT_IMAGE_BACKGROUND_PATH "assets/images/back_future.jpg"
 
 #define DEFAULT_FPS 60
+
+#define TEXT_FPS "fps"
 
 class Game {
 public:
@@ -41,7 +44,7 @@ public:
     int getFps();
     int getFrameDelay();
 
-    void renderTextFps(int fps);
+    void updateTextFPS(int fps);
 
     Uint32 frameStart;
     int frameTime;
@@ -49,21 +52,17 @@ public:
 private:
     int count;
     bool isRunning;
+    int fps;
 
     SDL_Window* window;
     SDL_Renderer* renderer;
 
     SDL_Color textColor = { 255, 255, 255, 255 };
 
-    // SDL_Texture* backgroundTex;
-    // SDL_Texture* playerTex;
-    // SDL_Rect srcPlayerRect, destPlayerRect;
-    // SDL_Texture *fpsTexture;
-    // SDL_Rect fpsRect;
+    Texture* backgroundTexture = nullptr;
+    Texture* fpsText = nullptr;
 
-    Texture* backgroundTexture = new Texture();
-    Texture* playerTexture = new Texture();
-    Texture* fpsText = new Texture();
+    GameObject* player = nullptr;
 };
 
 #endif

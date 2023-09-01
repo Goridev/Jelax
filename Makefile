@@ -20,7 +20,7 @@ SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
 
 # Nom de l'exécutable
-TARGET = $(BINDIR)/JustRelax
+TARGET = $(BINDIR)/Jelax
 
 # Options de lien pour la bibliothèque SDL2
 LDFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf

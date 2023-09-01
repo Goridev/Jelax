@@ -3,12 +3,11 @@
 Texture* TextureManager::LoadTexture(const char* filePath, SDL_Renderer* renderer)
 {
     Texture* tex = new Texture();
-    SDL_Rect rect;
     SDL_Surface* surface = IMG_Load(filePath);
+    tex->destRect = new SDL_Rect();
+    tex->srcRect = new SDL_Rect();
     tex->texture = SDL_CreateTextureFromSurface(renderer, surface);
-    tex->rect = rect;
     SDL_FreeSurface(surface);
-
     return tex;
 }
 
@@ -16,17 +15,19 @@ Texture* TextureManager::LoadTextureText(int screenWidth, const char* fontPath, 
 {
     TTF_Init();
     Texture* tex = new Texture();
+    tex->destRect = new SDL_Rect();
+    tex->srcRect = new SDL_Rect();
+
     TTF_Font* font = TTF_OpenFont(fontPath, fontSize);
-    SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Rect rect;
+    SDL_Surface* surface = TTF_RenderUTF8_Solid(font, text, color);
     tex->texture = SDL_CreateTextureFromSurface(renderer, surface);
-    tex->rect = rect;
-    tex->rect.x = screenWidth - 250;
-    tex->rect.y = 150;
-    tex->rect.w = surface->w;
-    tex->rect.h = surface->h;
+
+    tex->destRect->x = screenWidth - 250;
+    tex->destRect->y = 150;
+    tex->destRect->w = surface->w;
+    tex->destRect->h = surface->h;
 
     SDL_FreeSurface(surface);
-    TTF_Quit();
+    TTF_CloseFont(font);
     return tex;
 }
